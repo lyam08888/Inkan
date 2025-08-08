@@ -137,14 +137,15 @@
                 updateStatus('⏳ Démarrage du serveur...', false);
                 log('Lancement du serveur Dofus...');
 
-                const process = new ActiveXObject('WScript.Shell');
-                process.Run('LANCER-SERVEUR-DOFUS.bat', 1, false);
+                const response = await fetch('http://localhost:3000/start-server');
+                const data = await response.json();
 
-                // Simuler le démarrage réussi
-                setTimeout(() => {
+                if (data.success) {
                     log('✅ Serveur démarré avec succès!');
                     updateStatus('✅ Serveur en ligne', true);
-                }, 2000);
+                } else {
+                    throw new Error(data.error || 'Erreur inconnue');
+                }
 
             } catch (error) {
                 log('❌ Erreur: ' + error.message);
@@ -161,10 +162,14 @@
             try {
                 log('Lancement du jeu...');
                 
-                const process = new ActiveXObject('WScript.Shell');
-                process.Run('JOUER.bat', 1, false);
+                const response = await fetch('http://localhost:3000/start-game');
+                const data = await response.json();
 
-                log('✅ Jeu lancé!');
+                if (data.success) {
+                    log('✅ Jeu lancé avec succès!');
+                } else {
+                    throw new Error(data.error || 'Erreur inconnue');
+                }
 
             } catch (error) {
                 log('❌ Erreur: ' + error.message);
