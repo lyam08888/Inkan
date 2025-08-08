@@ -60,56 +60,38 @@ try {
         exit 1
     }
 
-    # Étape 4: Créer la base de données SQLite (alternative à MariaDB)
-    Write-Log "Configuration de la base de données..." "INFO"
+    # Étape 4: Créer et initialiser la base de données SQLite
+    Write-Log "Configuration de la base de données SQLite..." "INFO"
     $dbPath = Join-Path $ProjectPath "database"
     if (-not (Test-Path $dbPath)) {
         New-Item -ItemType Directory -Path $dbPath -Force | Out-Null
         Write-Log "Dossier database créé" "SUCCESS"
     }
 
-    # Créer un fichier SQL de base
-    $sqlContent = @"
--- Base de données Shivas
-CREATE TABLE IF NOT EXISTS accounts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    nickname VARCHAR(255),
-    secret_question VARCHAR(255),
-    secret_answer VARCHAR(255),
-    rights INTEGER DEFAULT 0,
-    banned BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS players (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    account_id INTEGER NOT NULL,
-    name VARCHAR(255) UNIQUE NOT NULL,
-    breed INTEGER NOT NULL,
-    gender BOOLEAN NOT NULL,
-    colors VARCHAR(255),
-    level INTEGER DEFAULT 200,
-    experience BIGINT DEFAULT 0,
-    kamas BIGINT DEFAULT 1000000,
-    map_id INTEGER DEFAULT 7411,
-    cell_id INTEGER DEFAULT 255,
-    direction INTEGER DEFAULT 1,
-    FOREIGN KEY (account_id) REFERENCES accounts(id)
-);
-
--- Insérer un compte de test
-INSERT OR IGNORE INTO accounts (name, password, nickname, rights) 
-VALUES ('admin', 'admin', 'Administrateur', 1);
-
-INSERT OR IGNORE INTO accounts (name, password, nickname, rights) 
-VALUES ('test', 'test', 'Joueur Test', 0);
-"@
-
+    $dbFile = Join-Path $ProjectPath "database\shivas.db"
     $sqlFile = Join-Path $ProjectPath "database\shivas.sql"
-    Set-Content $sqlFile $sqlContent -Encoding UTF8
-    Write-Log "Base de données SQL créée" "SUCCESS"
+    
+    if (Test-Path $sqlFile) {
+        Write-Log "Initialisation de la base de données SQLite..." "INFO"
+        try {
+            # Utiliser sqlite3 si disponible, sinon créer une base vide
+            if (Get-Command sqlite3 -ErrorAction SilentlyContinue) {
+                & sqlite3 $dbFile ".read $sqlFile"
+                Write-Log "Base de données SQLite initialisée avec succès" "SUCCESS"
+            } else {
+                Write-Log "SQLite3 non trouvé, création d'une base vide" "WARNING"
+                # Créer un fichier de base vide
+                New-Item -Path $dbFile -ItemType File -Force | Out-Null
+                Write-Log "Fichier de base de données créé (sera initialisé au premier démarrage)" "SUCCESS"
+            }
+        } catch {
+            Write-Log "Erreur lors de l'initialisation de la base: $_" "WARNING"
+            Write-Log "La base sera initialisée au premier démarrage du serveur" "INFO"
+        }
+    } else {
+        Write-Log "Fichier SQL non trouvé, création d'une base vide" "WARNING"
+        New-Item -Path $dbFile -ItemType File -Force | Out-Null
+    }
 
     # Étape 5: Compiler le projet
     Write-Log "Compilation du projet..." "INFO"

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<maps>
+    <!-- Carte de départ - Incarnam -->
+    <map id="7411" name="Incarnam - Centre" width="15" height="17">
+        <cells>
+            <!-- Définition basique des cellules pour la carte de départ -->
+            <cell id="255" walkable="true" lineOfSight="true" />
+        </cells>
+    </map>
+</maps>

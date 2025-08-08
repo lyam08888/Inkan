@@ -1,0 +1,84 @@
+🎮 SERVEUR DOFUS SHIVAS - MODE HORS LIGNE
+==========================================
+
+🚀 DÉMARRAGE RAPIDE:
+-------------------
+1. Double-cliquez sur "🎮 JOUER A DOFUS HORS LIGNE.bat"
+2. Suivez les instructions à l'écran
+3. L'interface web s'ouvrira automatiquement
+4. Configurez et démarrez le serveur depuis l'interface
+5. Téléchargez le config.xml
+6. Lancez Dofus et amusez-vous !
+
+📋 PRÉREQUIS:
+------------
+• Java 8+ (sera installé automatiquement si manquant)
+• Node.js (sera installé automatiquement si manquant)
+• Client Dofus version 1.29.1
+• Connexion internet pour l'installation initiale uniquement
+
+🎯 CARACTÉRISTIQUES DU SERVEUR:
+------------------------------
+• Niveau de départ: 200
+• Kamas de départ: 1,000,000
+• Points d'action: 6
+• Points de mouvement: 3
+• Tous les waypoints activés
+• Expérience et drop normaux
+
+🔐 COMPTES DE TEST:
+------------------
+• admin / admin (Administrateur)
+• test / test (Joueur normal)
+• demo / demo (Démonstration)
+
+🌐 INTERFACE WEB:
+----------------
+URL: http://localhost:3000
+Fonctionnalités:
+• Configuration automatique
+• Démarrage/arrêt du serveur
+• Console en temps réel
+• Téléchargement du config.xml
+• Statut du serveur en direct
+
+📁 CONFIGURATION CLIENT DOFUS:
+------------------------------
+1. Téléchargez config.xml depuis l'interface web
+2. Placez-le dans le dossier de votre client Dofus
+3. Lancez Dofus
+4. Sélectionnez la configuration "localhost"
+5. Connectez-vous avec un des comptes de test
+6. Créez votre personnage et jouez !
+
+🔧 DÉPANNAGE:
+------------
+• Si Java/Node.js ne s'installent pas automatiquement:
+  - Installez-les manuellement depuis leurs sites officiels
+  - Redémarrez votre ordinateur
+  - Relancez le script
+
+• Si le serveur ne démarre pas:
+  - Vérifiez que les ports 3000, 6789 et 9876 sont libres
+  - Consultez les logs dans l'interface web
+  - Redémarrez l'interface
+
+• Si vous ne pouvez pas vous connecter au jeu:
+  - Vérifiez que le serveur est en ligne (statut vert)
+  - Vérifiez que config.xml est dans le bon dossier
+  - Utilisez Dofus version 1.29.1 exactement
+
+📞 SUPPORT:
+----------
+En cas de problème, consultez:
+• Les logs dans l'interface web (console noire)
+• Le fichier README-INTERFACE.md pour plus de détails
+• Les forums de la communauté Dofus
+
+🎉 BON JEU !
+-----------
+Amusez-vous bien dans l'univers de Dofus en mode hors ligne !
+
+Version: Shivas 1.0-SNAPSHOT
+Interface: Web 1.0
+Dernière mise à jour: 2025

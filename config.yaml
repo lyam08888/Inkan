@@ -1,6 +1,6 @@
 database:
-  connection: "jdbc:mariadb://localhost/shivas"
-  user: "root"
+  connection: "jdbc:sqlite:database/shivas.db"
+  user: ""
   password: ""
   flush_delay: 30 # seconds
   save_delay: 5 # minutes
