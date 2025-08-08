@@ -1,0 +1,6 @@
+@echo off
+echo Installation des dépendances Python...
+pip install flask flask-cors
+echo Démarrage du serveur...
+python server.py
+pause
