@@ -121,21 +121,23 @@
         let serverRunning = false;
 
         function runBatchFile(batFile) {
-            // Créer un objet ActiveX pour Windows Script Host
-            try {
-                const shell = new ActiveXObject("WScript.Shell");
-                // Obtenir le chemin complet du répertoire actuel
-                const currentPath = window.location.pathname;
-                const directoryPath = currentPath.substring(0, currentPath.lastIndexOf('\\'));
-                // Exécuter le fichier .bat
-                shell.Run('"' + directoryPath + '\\' + batFile + '"', 1, false);
-                return true;
-            } catch (e) {
-                console.error(e);
-                // Si ActiveX ne fonctionne pas, essayer avec une URL directe
-                window.location.href = batFile;
-                return false;
-            }
+            // Créer un iframe caché pour éviter la navigation de la page
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            // Construire l'URL absolue vers le fichier .bat
+            const currentPath = decodeURIComponent(window.location.pathname);
+            const directoryPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+            const batPath = 'file://' + directoryPath + '/' + batFile;
+            
+            // Charger le fichier .bat dans l'iframe
+            iframe.src = batPath;
+            
+            // Nettoyer l'iframe après un court délai
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 1000);
         }
 
         function log(message) {
@@ -155,7 +157,7 @@
                 updateStatus('⏳ Démarrage du serveur...', false);
                 log('Lancement du serveur Dofus...');
 
-                runBatchFile('LANCER-SERVEUR-DOFUS.bat');
+                window.open('launch-server.html', '_blank', 'width=1,height=1');
 
                 // Simuler le démarrage réussi après un court délai
                 setTimeout(() => {
@@ -178,7 +180,7 @@
             try {
                 log('Lancement du jeu...');
                 
-                runBatchFile('JOUER.bat');
+                window.open('launch-game.html', '_blank', 'width=1,height=1');
                 
                 log('✅ Jeu lancé avec succès!');
 
