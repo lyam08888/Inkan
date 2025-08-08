@@ -7,11 +7,11 @@ database:
   refresh_rate: 60 # seconds
 
 data:
-  path: "c:\\Users\\Montoya\\Inkan\\data\\"
+  path: "data/"
   extension: "xml"
 
 mods:
-  path: "c:\\Users\\Montoya\\Inkan\\mods\\"
+  path: "mods/"
 
 login:
   port: 6789
