@@ -1,44 +1,16 @@
-subprojects {
-    apply plugin: 'java'
+dependencies {
+    compile project(':shivas-protocol')
+    compile project(':shivas-common')
+    compile project(':shivas-data')
+    compile project(':atomium-core')
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-    group = 'org.shivas'
-    version = '2.0-SNAPSHOT'
+    compile "com.google.guava:guava:$guavaVersion"
+    compile "com.google.inject:guice:$guiceVersion"
+    compile "com.google.inject.extensions:guice-multibindings:$guiceVersion"
+    compile "org.apache.mina:mina-core:$minaVersion"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "org.yaml:snakeyaml:$snakeyamlVersion"
 
-    ext {
-        guavaVersion = '20.0'
-        guiceVersion = '3.0'
-        jdomVersion = '2.0.+'
-        jodatimeVersion = '2.9.+'
-        junitVersion = '4.12'
-        logbackVersion = '1.1.+'
-        mariadbVersion = '1.5.+'
-        minaVersion = '2.0.+'
-        mockitoVersion = '2.2.28'
-        slf4jVersion = '1.7.+'
-        snakeyamlVersion = '1.17'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        testCompile "junit:junit:$junitVersion"
-        testCompile "org.mockito:mockito-core:$mockitoVersion"
-    }
-
-    test {
-        workingDir rootProject.projectDir
-    }
-
-    compileJava {
-        options.compilerArgs << '-Xlint:all' << '-Xlint:-serial'
-        options.encoding = 'UTF-8'
-    }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.2.1'
+    runtime "ch.qos.logback:logback-classic:$logbackVersion"
+    runtime "org.mariadb.jdbc:mariadb-java-client:$mariadbVersion"
 }
