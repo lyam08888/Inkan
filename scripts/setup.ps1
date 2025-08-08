@@ -1,7 +1,4 @@
 # Script de configuration automatique pour Shivas
-param(
-    [string]$ProjectPath = "c:\Users\Montoya\Inkan"
-)
 
 Write-Host "=== Configuration automatique du serveur Dofus Shivas ===" -ForegroundColor Green
 
@@ -19,8 +16,8 @@ function Write-Log {
 }
 
 try {
-    Set-Location $ProjectPath
-    
+    $ProjectPath = (Get-Location).Path
+
     # Étape 1: Vérifier Java
     Write-Log "Vérification de Java..." "INFO"
     try {
@@ -45,22 +42,7 @@ try {
         exit 1
     }
 
-    # Étape 3: Configurer le fichier config.yaml
-    Write-Log "Configuration du fichier config.yaml..." "INFO"
-    $configPath = Join-Path $ProjectPath "config.yaml"
-    if (Test-Path $configPath) {
-        # Mettre à jour les chemins dans config.yaml
-        $config = Get-Content $configPath -Raw
-        $config = $config -replace '/Users/antoine/Workspace/Shivas/data/', "$ProjectPath\data\"
-        $config = $config -replace '/Users/antoine/Workspace/Shivas/mods/', "$ProjectPath\mods\"
-        Set-Content $configPath $config -Encoding UTF8
-        Write-Log "Configuration mise à jour avec les chemins corrects" "SUCCESS"
-    } else {
-        Write-Log "Fichier config.yaml non trouvé" "ERROR"
-        exit 1
-    }
-
-    # Étape 4: Créer et initialiser la base de données SQLite
+    # Étape 3: Créer et initialiser la base de données SQLite
     Write-Log "Configuration de la base de données SQLite..." "INFO"
     $dbPath = Join-Path $ProjectPath "database"
     if (-not (Test-Path $dbPath)) {
@@ -93,7 +75,7 @@ try {
         New-Item -Path $dbFile -ItemType File -Force | Out-Null
     }
 
-    # Étape 5: Compiler le projet
+    # Étape 4: Compiler le projet
     Write-Log "Compilation du projet..." "INFO"
     try {
         $buildResult = & ".\gradlew.bat" clean build 2>&1
@@ -106,25 +88,6 @@ try {
     } catch {
         Write-Log "Erreur lors de l'exécution de Gradle: $_" "ERROR"
     }
-
-    # Étape 6: Créer les scripts de démarrage
-    Write-Log "Création des scripts de démarrage..." "INFO"
-    
-    $startScript = @"
-@echo off
-echo Demarrage du serveur Dofus Shivas...
-cd /d "$ProjectPath"
-gradlew.bat :shivas-host:run
-pause
-"@
-
-    $startScriptPath = Join-Path $ProjectPath "scripts\start-server.bat"
-    $scriptsDir = Join-Path $ProjectPath "scripts"
-    if (-not (Test-Path $scriptsDir)) {
-        New-Item -ItemType Directory -Path $scriptsDir -Force | Out-Null
-    }
-    Set-Content $startScriptPath $startScript -Encoding ASCII
-    Write-Log "Script de démarrage créé: $startScriptPath" "SUCCESS"
 
     Write-Log "=== Configuration terminée avec succès ! ===" "SUCCESS"
     Write-Log "Vous pouvez maintenant démarrer le serveur depuis l'interface web" "INFO"
