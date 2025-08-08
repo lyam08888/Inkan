@@ -5,6 +5,176 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serveur Dofus Shivas - Mode Hors Ligne</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .button:hover {
+            background: #45a049;
+        }
+        
+        .button.play {
+            background: #2196F3;
+        }
+        
+        .button.play:hover {
+            background: #1976D2;
+        }
+        
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        function execBat(batFile) {
+            var link = document.createElement('a');
+            link.href = batFile;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function startServer() {
+            document.getElementById('serverStatus').textContent = 'Démarrage en cours...';
+            execBat('LANCER-SERVEUR-DOFUS.bat');
+            setTimeout(function() {
+                document.getElementById('serverStatus').textContent = 'Serveur démarré avec succès!';
+                document.getElementById('startGame').disabled = false;
+            }, 5000);
+        }
+
+        function launchGame() {
+            execBat('JOUER.bat');
+        }
+    </script>
+    <script>
+        function startServer() {
+            document.getElementById('serverStatus').textContent = 'Démarrage en cours...';
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'LANCER-SERVEUR-DOFUS.bat', true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    document.getElementById('serverStatus').textContent = 'Serveur démarré avec succès!';
+                    document.getElementById('startGame').disabled = false;
+                } else {
+                    document.getElementById('serverStatus').textContent = 'Erreur lors du démarrage du serveur';
+                }
+            };
+            xhr.onerror = function() {
+                document.getElementById('serverStatus').textContent = 'Erreur de connexion';
+            };
+            xhr.send();
+        }
+
+        function launchGame() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'JOUER.bat', true);
+            xhr.send();
+        }
+    <script>
+        async function startServer() {
+            try {
+                document.getElementById('serverStatus').textContent = 'Démarrage en cours...';
+                const startScript = new PowerShell('LANCER-SERVEUR-DOFUS.bat');
+                await startScript.execute();
+                document.getElementById('serverStatus').textContent = 'Serveur démarré avec succès!';
+                document.getElementById('startGame').disabled = false;
+            } catch (error) {
+                document.getElementById('serverStatus').textContent = 'Erreur lors du démarrage du serveur';
+                console.error(error);
+            }
+        }
+
+        async function launchGame() {
+            try {
+                const gameScript = new PowerShell('JOUER.bat');
+                await gameScript.execute();
+            } catch (error) {
+                alert('Erreur lors du lancement du jeu');
+                console.error(error);
+            }
+        }
+
+        class PowerShell {
+            constructor(scriptPath) {
+                this.scriptPath = scriptPath;
+            }
+
+            async execute() {
+                try {
+                    const process = await window.powershell.start(this.scriptPath);
+                    return process;
+                } catch (error) {
+                    throw new Error(`Erreur d'exécution du script: ${error}`);
+                }
+            }
+        }
+    <script>
+        async function startServer() {
+            try {
+                const response = await fetch('http://localhost:666/start-server', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    document.getElementById('serverStatus').textContent = 'Serveur démarré avec succès!';
+                    document.getElementById('startGame').disabled = false;
+                } else {
+                    document.getElementById('serverStatus').textContent = 'Erreur lors du démarrage du serveur';
+                }
+            } catch (error) {
+                document.getElementById('serverStatus').textContent = 'Erreur de connexion';
+                console.error(error);
+            }
+        }
+
+        async function launchGame() {
+            try {
+                window.location.href = 'dofus://game';
+            } catch (error) {
+                alert('Erreur lors du lancement du jeu');
+                console.error(error);
+            }
+        }
+    </script>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -171,6 +341,17 @@
         .console {
             background: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #4ecdc4;
+            font-family: 'Courier New', monospace;
+        }
+
+        #serverStatus {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #ffd700;
+        }
             padding: 20px;
             margin: 20px 0;
             text-align: left;
