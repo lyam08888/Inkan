@@ -1,0 +1,3 @@
+<actions item="548">
+	<action type="TELEPORT" map="%start%" cell="%start%" />
+</actions>
