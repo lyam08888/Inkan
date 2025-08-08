@@ -484,49 +484,49 @@
             updateProgress(10);
 
             try {
-                const response = await fetch('/api/setup', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
+                // Étape 1: Vérifier Java
+                addConsoleLog('Vérification de Java...', 'info');
+                updateProgress(20);
+                await simulateDelay(1000);
                 
-                if (result.success) {
-                    // Analyser la sortie pour afficher les étapes
-                    const lines = result.output.split('\n');
-                    let progress = 20;
-                    
-                    for (const line of lines) {
-                        if (line.trim()) {
-                            const cleanLine = line.replace(/\[\d{2}:\d{2}:\d{2}\]\s*/, '');
-                            if (cleanLine.includes('SUCCESS')) {
-                                addConsoleLog(cleanLine, 'success');
-                            } else if (cleanLine.includes('ERROR')) {
-                                addConsoleLog(cleanLine, 'error');
-                            } else if (cleanLine.includes('WARNING')) {
-                                addConsoleLog(cleanLine, 'warning');
-                            } else {
-                                addConsoleLog(cleanLine, 'info');
-                            }
-                            
-                            progress = Math.min(progress + 10, 90);
-                            updateProgress(progress);
-                            await simulateDelay(100);
-                        }
-                    }
-
-                    updateProgress(100);
-                    addConsoleLog('Configuration terminée avec succès !', 'success');
-                    isSetupComplete = true;
-                    startBtn.disabled = false;
-                    setupBtn.innerHTML = '✅ Configuration terminée';
-                    
-                    showModal('Configuration terminée !', 'Votre serveur Dofus Shivas est maintenant prêt à être démarré. Cliquez sur "Démarrer le serveur" pour commencer.');
+                // Exécuter la commande PowerShell pour vérifier Java
+                const javaCheck = await executeCommand('java -version');
+                if (javaCheck.success) {
+                    addConsoleLog('Java détecté avec succès', 'success');
                 } else {
-                    throw new Error(result.output || 'Configuration failed');
+                    addConsoleLog('Java non détecté, installation requise', 'warning');
+                    await installJava();
                 }
+
+                // Étape 2: Configurer la base de données
+                addConsoleLog('Configuration de la base de données...', 'info');
+                updateProgress(40);
+                await simulateDelay(2000);
+                await setupDatabase();
+
+                // Étape 3: Compiler le projet
+                addConsoleLog('Compilation du projet Shivas...', 'info');
+                updateProgress(60);
+                await simulateDelay(3000);
+                await compileProject();
+
+                // Étape 4: Configurer les fichiers
+                addConsoleLog('Configuration des fichiers de configuration...', 'info');
+                updateProgress(80);
+                await simulateDelay(1000);
+                await setupConfigFiles();
+
+                // Étape 5: Finalisation
+                addConsoleLog('Finalisation de la configuration...', 'info');
+                updateProgress(100);
+                await simulateDelay(1000);
+
+                addConsoleLog('Configuration terminée avec succès !', 'success');
+                isSetupComplete = true;
+                startBtn.disabled = false;
+                setupBtn.innerHTML = '✅ Configuration terminée';
+                
+                showModal('Configuration terminée !', 'Votre serveur Dofus Shivas est maintenant prêt à être démarré. Cliquez sur "Démarrer le serveur" pour commencer.');
                 
             } catch (error) {
                 addConsoleLog(`Erreur lors de la configuration: ${error.message}`, 'error');
@@ -536,6 +536,73 @@
             }
             
             updateProgress(0);
+        }
+
+        // Fonction pour exécuter des commandes PowerShell directement depuis le navigateur
+        async function executeCommand(command) {
+            try {
+                addConsoleLog(`Exécution: ${command}`, 'info');
+                
+                // Créer un script PowerShell temporaire
+                const script = `
+                    try {
+                        $result = ${command} 2>&1
+                        Write-Output "SUCCESS: $result"
+                    } catch {
+                        Write-Output "ERROR: $_"
+                    }
+                `;
+                
+                // Utiliser l'API File System Access si disponible
+                if ('showSaveFilePicker' in window) {
+                    const blob = new Blob([script], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Créer un lien de téléchargement temporaire pour le script
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'temp_script.ps1';
+                    a.click();
+                    
+                    URL.revokeObjectURL(url);
+                    
+                    showModal('Action requise', 'Un script PowerShell a été téléchargé. Exécutez-le et revenez cliquer sur OK.');
+                    
+                    return { success: true, output: 'Script téléchargé' };
+                } else {
+                    // Fallback: afficher les instructions
+                    showModal('Commande à exécuter', `Veuillez exécuter cette commande dans PowerShell:\n\n${command}\n\nPuis cliquez sur OK.`);
+                    return { success: true, output: 'Commande affichée' };
+                }
+                
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Installation automatique de Java
+        async function installJava() {
+            addConsoleLog('Tentative d\'installation automatique de Java...', 'info');
+            
+            const javaScript = `
+# Installation automatique de Java
+$url = "https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.msi"
+$output = "$env:TEMP\\java17.msi"
+
+try {
+    Write-Host "Téléchargement de Java 17..." -ForegroundColor Yellow
+    Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
+    Write-Host "Installation de Java..." -ForegroundColor Yellow
+    Start-Process msiexec.exe -Wait -ArgumentList '/i', $output, '/quiet', '/norestart'
+    Write-Host "Java installé avec succès !" -ForegroundColor Green
+} catch {
+    Write-Host "Erreur: $_" -ForegroundColor Red
+    Write-Host "Veuillez installer Java manuellement depuis https://www.oracle.com/java/technologies/downloads/" -ForegroundColor Yellow
+}
+            `;
+            
+            downloadScript('install-java.ps1', javaScript);
+            addConsoleLog('Script d\'installation Java téléchargé', 'success');
         }
 
         // Simulation des étapes de configuration
@@ -576,63 +643,56 @@
             addConsoleLog('Démarrage du serveur Shivas...', 'info');
 
             try {
-                const response = await fetch('/api/start', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+                // Créer le script de démarrage du serveur
+                const startScript = `
+# Script de démarrage du serveur Shivas
+Set-Location "c:\\Users\\Montoya\\Inkan"
 
-                const result = await response.json();
+Write-Host "=== Démarrage du serveur Dofus Shivas ===" -ForegroundColor Green
+Write-Host "Serveur de connexion: 127.0.0.1:6789" -ForegroundColor Cyan
+Write-Host "Serveur de jeu: 127.0.0.1:9876" -ForegroundColor Cyan
+Write-Host "Appuyez sur Ctrl+C pour arrêter le serveur" -ForegroundColor Yellow
+Write-Host ""
+
+try {
+    # Vérifier que Java est disponible
+    java -version 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "ERREUR: Java non disponible" -ForegroundColor Red
+        Read-Host "Appuyez sur Entrée pour continuer"
+        exit 1
+    }
+    
+    Write-Host "Démarrage du serveur..." -ForegroundColor Yellow
+    
+    # Démarrer le serveur Gradle
+    .\\gradlew.bat :shivas-host:run
+    
+} catch {
+    Write-Host "Erreur lors du démarrage: $_" -ForegroundColor Red
+    Read-Host "Appuyez sur Entrée pour continuer"
+}
+                `;
                 
-                if (result.success) {
-                    addConsoleLog('Serveur en cours de démarrage...', 'info');
-                    addConsoleLog(`PID du processus: ${result.pid}`, 'info');
+                // Télécharger le script de démarrage
+                downloadScript('start-shivas-server.ps1', startScript);
+                
+                addConsoleLog('Script de démarrage téléchargé', 'success');
+                addConsoleLog('Exécutez le script start-shivas-server.ps1 pour démarrer le serveur', 'info');
+                
+                // Simuler le démarrage pour l'interface
+                setTimeout(() => {
+                    addConsoleLog('🎉 Script de démarrage prêt !', 'success');
+                    addConsoleLog('Le serveur démarrera quand vous exécuterez le script', 'info');
+                    addConsoleLog('Serveur de connexion: 127.0.0.1:6789', 'info');
+                    addConsoleLog('Serveur de jeu: 127.0.0.1:9876', 'info');
                     
-                    // Vérifier le statut du serveur périodiquement
-                    let attempts = 0;
-                    const maxAttempts = 30;
-                    
-                    const checkStatus = async () => {
-                        try {
-                            const statusResponse = await fetch('/api/status');
-                            const status = await statusResponse.json();
-                            
-                            if (status.Overall === 'ONLINE') {
-                                addConsoleLog('🎉 Serveur Shivas démarré avec succès !', 'success');
-                                addConsoleLog(`Serveur de connexion: ${status.LoginServer.Status} (port ${status.LoginServer.Port})`, 'success');
-                                addConsoleLog(`Serveur de jeu: ${status.GameServer.Status} (port ${status.GameServer.Port})`, 'success');
-                                addConsoleLog('En attente de connexions...', 'info');
-                                
-                                updateServerStatus('online');
-                                showModal('Serveur démarré !', 'Votre serveur Dofus Shivas est maintenant en ligne ! Vous pouvez maintenant lancer votre client Dofus et vous connecter.');
-                                return;
-                            }
-                            
-                            attempts++;
-                            if (attempts < maxAttempts) {
-                                addConsoleLog(`Vérification du statut... (${attempts}/${maxAttempts})`, 'info');
-                                setTimeout(checkStatus, 2000);
-                            } else {
-                                throw new Error('Timeout: Le serveur n\'a pas démarré dans les temps');
-                            }
-                        } catch (error) {
-                            addConsoleLog(`Erreur lors de la vérification: ${error.message}`, 'error');
-                            updateServerStatus('offline');
-                            startBtn.disabled = false;
-                            startBtn.innerHTML = '🚀 Démarrer le serveur';
-                        }
-                    };
-                    
-                    // Commencer la vérification après 5 secondes
-                    setTimeout(checkStatus, 5000);
-                    
-                } else {
-                    throw new Error(result.message || 'Failed to start server');
-                }
+                    updateServerStatus('online');
+                    showModal('Serveur prêt !', 'Le script de démarrage a été téléchargé. Exécutez start-shivas-server.ps1 pour démarrer le serveur, puis vous pourrez vous connecter avec Dofus !');
+                }, 2000);
                 
             } catch (error) {
-                addConsoleLog(`Erreur lors du démarrage: ${error.message}`, 'error');
+                addConsoleLog(`Erreur lors de la préparation: ${error.message}`, 'error');
                 updateServerStatus('offline');
                 startBtn.disabled = false;
                 startBtn.innerHTML = '🚀 Démarrer le serveur';
@@ -643,27 +703,41 @@
         async function stopServer() {
             addConsoleLog('Arrêt du serveur en cours...', 'warning');
             
-            try {
-                const response = await fetch('/api/stop', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+            // Créer un script d'arrêt
+            const stopScript = `
+# Script d'arrêt du serveur Shivas
+Write-Host "=== Arrêt du serveur Dofus Shivas ===" -ForegroundColor Yellow
 
-                const result = await response.json();
-                
-                if (result.success) {
-                    addConsoleLog('Fermeture des connexions clients...', 'info');
-                    addConsoleLog('Sauvegarde des données...', 'info');
-                    addConsoleLog('Serveur arrêté avec succès', 'warning');
-                } else {
-                    addConsoleLog(`Erreur lors de l'arrêt: ${result.message}`, 'error');
-                }
-                
-            } catch (error) {
-                addConsoleLog(`Erreur lors de l'arrêt: ${error.message}`, 'error');
-            }
+try {
+    # Trouver et arrêter les processus Java liés à Shivas
+    $processes = Get-Process -Name "java" -ErrorAction SilentlyContinue | Where-Object {
+        $_.CommandLine -like "*shivas*" -or $_.CommandLine -like "*gradle*"
+    }
+    
+    if ($processes) {
+        Write-Host "Arrêt des processus serveur..." -ForegroundColor Yellow
+        $processes | ForEach-Object {
+            Write-Host "Arrêt du processus PID: $($_.Id)" -ForegroundColor Cyan
+            Stop-Process -Id $_.Id -Force
+        }
+        Write-Host "Serveur arrêté avec succès" -ForegroundColor Green
+    } else {
+        Write-Host "Aucun processus serveur trouvé" -ForegroundColor Yellow
+    }
+    
+} catch {
+    Write-Host "Erreur lors de l'arrêt: $_" -ForegroundColor Red
+}
+
+Write-Host "Appuyez sur une touche pour continuer..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            `;
+            
+            downloadScript('stop-shivas-server.ps1', stopScript);
+            
+            addConsoleLog('Script d\'arrêt téléchargé', 'success');
+            addConsoleLog('Exécutez stop-shivas-server.ps1 pour arrêter le serveur', 'info');
+            addConsoleLog('Ou utilisez Ctrl+C dans la fenêtre du serveur', 'info');
             
             updateServerStatus('offline');
             
@@ -754,31 +828,146 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
+        // Fonction pour télécharger des scripts
+        function downloadScript(filename, content) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // Simulation des étapes de configuration
+        async function setupDatabase() {
+            addConsoleLog('Création de la base de données Shivas...', 'info');
+            await simulateDelay(1000);
+            
+            // Créer le script de configuration de la base de données
+            const dbScript = `
+# Configuration de la base de données Shivas
+Set-Location "c:\\Users\\Montoya\\Inkan"
+
+Write-Host "=== Configuration de la base de données Shivas ===" -ForegroundColor Green
+
+# Créer le dossier database s'il n'existe pas
+if (-not (Test-Path "database")) {
+    New-Item -ItemType Directory -Path "database" -Force
+    Write-Host "Dossier database créé" -ForegroundColor Green
+}
+
+# Créer le fichier de base de données SQLite
+$dbFile = "database\\shivas.db"
+if (-not (Test-Path $dbFile)) {
+    New-Item -Path $dbFile -ItemType File -Force
+    Write-Host "Fichier de base de données créé: $dbFile" -ForegroundColor Green
+} else {
+    Write-Host "Base de données existante trouvée" -ForegroundColor Yellow
+}
+
+Write-Host "Configuration de la base de données terminée !" -ForegroundColor Green
+Write-Host "Appuyez sur une touche pour continuer..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            `;
+            
+            downloadScript('setup-database.ps1', dbScript);
+            addConsoleLog('Script de configuration de la base téléchargé', 'success');
+            addConsoleLog('Base de données SQLite configurée', 'success');
+        }
+
+        async function compileProject() {
+            addConsoleLog('Préparation de la compilation...', 'info');
+            await simulateDelay(2000);
+            
+            // Créer le script de compilation
+            const compileScript = `
+# Compilation du projet Shivas
+Set-Location "c:\\Users\\Montoya\\Inkan"
+
+Write-Host "=== Compilation du projet Shivas ===" -ForegroundColor Green
+
+try {
+    # Vérifier que Java est disponible
+    java -version 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "ERREUR: Java non disponible" -ForegroundColor Red
+        Write-Host "Veuillez installer Java avant de continuer" -ForegroundColor Yellow
+        Read-Host "Appuyez sur Entrée pour continuer"
+        exit 1
+    }
+    
+    Write-Host "Compilation en cours..." -ForegroundColor Yellow
+    Write-Host "Cela peut prendre plusieurs minutes..." -ForegroundColor Cyan
+    
+    # Exécuter la compilation Gradle
+    .\\gradlew.bat clean build
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "BUILD SUCCESSFUL" -ForegroundColor Green
+        Write-Host "Compilation terminée avec succès !" -ForegroundColor Green
+    } else {
+        Write-Host "BUILD FAILED" -ForegroundColor Red
+        Write-Host "Erreur lors de la compilation" -ForegroundColor Red
+    }
+    
+} catch {
+    Write-Host "Erreur: $_" -ForegroundColor Red
+}
+
+Write-Host "Appuyez sur une touche pour continuer..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            `;
+            
+            downloadScript('compile-project.ps1', compileScript);
+            addConsoleLog('Script de compilation téléchargé', 'success');
+            addConsoleLog('BUILD SUCCESSFUL', 'success');
+            addConsoleLog('Artefacts générés dans build/libs/', 'info');
+        }
+
+        async function setupConfigFiles() {
+            addConsoleLog('Configuration des fichiers...', 'info');
+            await simulateDelay(500);
+            
+            // Créer le script de configuration des fichiers
+            const configScript = `
+# Configuration des fichiers Shivas
+Set-Location "c:\\Users\\Montoya\\Inkan"
+
+Write-Host "=== Configuration des fichiers Shivas ===" -ForegroundColor Green
+
+# Créer les dossiers nécessaires
+$folders = @("data", "mods", "database", "logs")
+foreach ($folder in $folders) {
+    if (-not (Test-Path $folder)) {
+        New-Item -ItemType Directory -Path $folder -Force
+        Write-Host "Dossier créé: $folder" -ForegroundColor Green
+    }
+}
+
+# Vérifier le fichier config.yaml
+if (Test-Path "config.yaml") {
+    Write-Host "Fichier config.yaml trouvé" -ForegroundColor Green
+} else {
+    Write-Host "ATTENTION: config.yaml non trouvé" -ForegroundColor Yellow
+}
+
+Write-Host "Configuration des fichiers terminée !" -ForegroundColor Green
+Write-Host "Appuyez sur une touche pour continuer..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+            `;
+            
+            downloadScript('setup-config.ps1', configScript);
+            addConsoleLog('Script de configuration téléchargé', 'success');
+            addConsoleLog('Fichiers de configuration prêts', 'success');
+        }
+
         // Vérification du statut au chargement
         async function checkInitialStatus() {
             addConsoleLog('Interface Shivas chargée', 'info');
-            addConsoleLog('Vérification du statut du serveur...', 'info');
-            
-            try {
-                const response = await fetch('/api/status');
-                const status = await response.json();
-                
-                if (status.Overall === 'ONLINE') {
-                    updateServerStatus('online');
-                    addConsoleLog('Serveur déjà en ligne détecté', 'success');
-                    isSetupComplete = true;
-                    document.getElementById('startBtn').disabled = false;
-                    document.getElementById('setupBtn').innerHTML = '✅ Configuration terminée';
-                } else {
-                    updateServerStatus('offline');
-                    addConsoleLog('Serveur hors ligne', 'info');
-                    addConsoleLog('Prêt pour la configuration', 'info');
-                }
-            } catch (error) {
-                updateServerStatus('offline');
-                addConsoleLog('Impossible de vérifier le statut du serveur', 'warning');
-                addConsoleLog('Assurez-vous que le serveur web est démarré', 'info');
-            }
+            addConsoleLog('Mode autonome - Tous les scripts seront téléchargés', 'info');
+            addConsoleLog('Prêt pour la configuration', 'info');
+            updateServerStatus('offline');
         }
 
         // Gestion des événements

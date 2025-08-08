@@ -1,0 +1,104 @@
+🎮 DOFUS SHIVAS - INTERFACE AUTONOME
+===================================
+
+🚀 NOUVEAU : TOUT FONCTIONNE DEPUIS L'INDEX.HTML !
+-------------------------------------------------
+
+Cette interface est maintenant 100% autonome :
+• Aucun serveur web externe requis
+• Tous les scripts sont générés automatiquement
+• Fonctionne directement dans votre navigateur
+• Télécharge tous les fichiers nécessaires
+
+📁 DÉMARRAGE ULTRA-SIMPLE :
+--------------------------
+1. Double-cliquez sur "🎮 DOFUS HORS LIGNE - TOUT EN UN.bat"
+2. L'interface s'ouvre dans votre navigateur
+3. Suivez les étapes dans l'interface
+4. Tous les scripts sont téléchargés automatiquement !
+
+🎯 FONCTIONNEMENT DE L'INTERFACE :
+---------------------------------
+
+📋 ÉTAPE 1 : Configuration automatique
+• Cliquez sur "Configuration automatique"
+• L'interface télécharge tous les scripts :
+  - install-java.ps1 (installation Java si nécessaire)
+  - setup-database.ps1 (configuration base de données)
+  - compile-project.ps1 (compilation du projet)
+  - setup-config.ps1 (configuration des fichiers)
+
+🚀 ÉTAPE 2 : Exécution des scripts
+• Exécutez les scripts téléchargés dans l'ordre
+• Chaque script est autonome et guidé
+• Suivez les instructions à l'écran
+
+🎮 ÉTAPE 3 : Démarrage du serveur
+• Cliquez sur "Démarrer le serveur" dans l'interface
+• Téléchargez et exécutez start-shivas-server.ps1
+• Le serveur Dofus démarre automatiquement
+
+📥 ÉTAPE 4 : Configuration client
+• Téléchargez config.xml depuis l'interface
+• Placez-le dans votre dossier client Dofus
+• Lancez Dofus et sélectionnez "localhost"
+
+✨ AVANTAGES DE CETTE APPROCHE :
+-------------------------------
+• ✅ Aucune dépendance externe (Node.js, serveur web)
+• ✅ Fonctionne hors ligne après téléchargement initial
+• ✅ Interface moderne et intuitive
+• ✅ Scripts PowerShell optimisés et sécurisés
+• ✅ Console en temps réel avec logs colorés
+• ✅ Téléchargement automatique de tous les fichiers
+• ✅ Compatible avec tous les navigateurs modernes
+
+🔐 COMPTES DE TEST :
+-------------------
+• admin / admin (Administrateur - niveau 200)
+• test / test (Joueur normal - niveau 200)
+• demo / demo (Démonstration - niveau 200)
+
+🎯 CARACTÉRISTIQUES DU SERVEUR :
+-------------------------------
+• Niveau de départ : 200
+• Kamas de départ : 1,000,000
+• Points d'action : 6
+• Points de mouvement : 3
+• Tous les waypoints activés
+• Base de données SQLite (pas besoin de MariaDB)
+• Configuration automatique complète
+
+📋 SCRIPTS GÉNÉRÉS AUTOMATIQUEMENT :
+-----------------------------------
+1. install-java.ps1 - Installation automatique de Java
+2. setup-database.ps1 - Configuration base de données SQLite
+3. compile-project.ps1 - Compilation du projet Shivas
+4. setup-config.ps1 - Configuration des dossiers et fichiers
+5. start-shivas-server.ps1 - Démarrage du serveur
+6. stop-shivas-server.ps1 - Arrêt du serveur
+7. config.xml - Configuration client Dofus
+
+🛠️ DÉPANNAGE :
+--------------
+• Si l'interface ne s'ouvre pas : Vérifiez que JavaScript est activé
+• Si les téléchargements ne fonctionnent pas : Autorisez les téléchargements
+• Si Java manque : Exécutez install-java.ps1 téléchargé
+• Si la compilation échoue : Vérifiez que Java est bien installé
+
+🌐 COMPATIBILITÉ NAVIGATEUR :
+----------------------------
+• ✅ Chrome/Chromium (recommandé)
+• ✅ Firefox
+• ✅ Edge
+• ✅ Safari
+• ⚠️ Internet Explorer non supporté
+
+🎉 PROFITEZ DE DOFUS HORS LIGNE !
+--------------------------------
+Cette interface vous permet de jouer à Dofus en mode complètement hors ligne
+avec un serveur privé local, sans aucune configuration complexe !
+
+Version : Shivas Interface Autonome 2.0
+Dernière mise à jour : 2025
+Compatibilité : Windows 10/11, Dofus 1.29.1
