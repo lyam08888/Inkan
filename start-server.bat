@@ -1,3 +1,0 @@
-@echo off
-echo Demarrage du serveur Dofus...
-call "LANCER-SERVEUR-DOFUS.bat"
