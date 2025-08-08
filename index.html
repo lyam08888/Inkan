@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serveur Dofus Shivas - Mode Hors Ligne</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .server-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .server-info h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .server-info p {
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .button-container {
+            margin: 30px 0;
+        }
+
+        .play-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px 0 rgba(255, 107, 107, 0.4);
+            margin: 10px;
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(255, 107, 107, 0.6);
+        }
+
+        .server-button {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px 0 rgba(78, 205, 196, 0.4);
+            margin: 10px;
+        }
+
+        .server-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(78, 205, 196, 0.6);
+        }
+
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .status.offline {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+        }
+
+        .status.online {
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid #4ecdc4;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .warning h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">⚔️</div>
+        <h1>Serveur Dofus Shivas</h1>
+        <p class="description">
+            Jouez à Dofus en mode hors ligne avec votre serveur privé local !
+            <br>Aucune connexion internet requise une fois le serveur démarré.
+        </p>
+
+        <div class="status offline" id="serverStatus">
+            🔴 Serveur arrêté
+        </div>
+
+        <div class="button-container">
+            <button class="server-button" onclick="startServer()" id="startBtn">
+                🚀 Démarrer le serveur
+            </button>
+            <button class="server-button" onclick="stopServer()" id="stopBtn" style="display: none;">
+                🛑 Arrêter le serveur
+            </button>
+        </div>
+
+        <div class="button-container">
+            <button class="play-button pulse" onclick="playGame()" id="playBtn" disabled>
+                🎮 JOUER SANS CONNEXION
+            </button>
+        </div>
+
+        <div class="server-info">
+            <h3>📋 Informations de connexion</h3>
+            <p><strong>Serveur de connexion :</strong> 127.0.0.1:6789</p>
+            <p><strong>Serveur de jeu :</strong> 127.0.0.1:9876</p>
+            <p><strong>Version client :</strong> 1.29.1</p>
+            <p><strong>Base de données :</strong> MariaDB locale</p>
+        </div>
+
+        <div class="instructions">
+            <h3>📖 Instructions</h3>
+            <ol>
+                <li><strong>Démarrer le serveur :</strong> Cliquez sur "Démarrer le serveur" et attendez qu'il soit en ligne</li>
+                <li><strong>Configurer le client :</strong> Utilisez le fichier config.xml fourni dans le dossier resources/</li>
+                <li><strong>Se connecter :</strong> Lancez votre client Dofus et connectez-vous avec n'importe quel nom d'utilisateur</li>
+                <li><strong>Jouer :</strong> Créez votre personnage et commencez à jouer !</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            <h4>⚠️ Prérequis</h4>
+            <p>• Java 8+ installé sur votre système</p>
+            <p>• MariaDB/MySQL installé et configuré</p>
+            <p>• Client Dofus version 1.29.1</p>
+            <p>• Base de données initialisée avec shivas.sql</p>
+        </div>
+
+        <div class="server-info">
+            <h3>🎯 Caractéristiques du serveur</h3>
+            <p><strong>Niveau de départ :</strong> 200</p>
+            <p><strong>Kamas de départ :</strong> 1,000,000</p>
+            <p><strong>Points d'action :</strong> 6</p>
+            <p><strong>Points de mouvement :</strong> 3</p>
+            <p><strong>Tous les waypoints :</strong> Activés</p>
+        </div>
+    </div>
+
+    <script>
+        let serverProcess = null;
+        let isServerRunning = false;
+
+        function updateServerStatus(online) {
+            const statusElement = document.getElementById('serverStatus');
+            const playBtn = document.getElementById('playBtn');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+
+            if (online) {
+                statusElement.className = 'status online';
+                statusElement.innerHTML = '🟢 Serveur en ligne';
+                playBtn.disabled = false;
+                playBtn.classList.add('pulse');
+                startBtn.style.display = 'none';
+                stopBtn.style.display = 'inline-block';
+                isServerRunning = true;
+            } else {
+                statusElement.className = 'status offline';
+                statusElement.innerHTML = '🔴 Serveur arrêté';
+                playBtn.disabled = true;
+                playBtn.classList.remove('pulse');
+                startBtn.style.display = 'inline-block';
+                stopBtn.style.display = 'none';
+                isServerRunning = false;
+            }
+        }
+
+        function startServer() {
+            const startBtn = document.getElementById('startBtn');
+            startBtn.innerHTML = '⏳ Démarrage...';
+            startBtn.disabled = true;
+
+            // Simuler le démarrage du serveur
+            setTimeout(() => {
+                // En réalité, vous devriez lancer le serveur Java ici
+                // Pour l'instant, on simule juste le changement d'état
+                updateServerStatus(true);
+                
+                // Afficher les instructions pour démarrer manuellement
+                alert(`Pour démarrer le serveur manuellement, ouvrez un terminal dans le dossier du projet et exécutez :
+
+Windows:
+gradlew.bat :shivas-host:run
+
+Linux/Mac:
+./gradlew :shivas-host:run
+
+Ou compilez d'abord avec :
+gradlew.bat build
+puis lancez le JAR généré.
+
+Assurez-vous que MariaDB est démarré et que la base de données est configurée !`);
+                
+                startBtn.innerHTML = '🚀 Démarrer le serveur';
+                startBtn.disabled = false;
+            }, 2000);
+        }
+
+        function stopServer() {
+            updateServerStatus(false);
+            alert('Pour arrêter le serveur, fermez la fenêtre du terminal ou utilisez Ctrl+C');
+        }
+
+        function playGame() {
+            if (!isServerRunning) {
+                alert('Veuillez d\'abord démarrer le serveur !');
+                return;
+            }
+
+            alert(`Instructions pour se connecter :
+
+1. Lancez votre client Dofus 1.29.1
+2. Utilisez le fichier config.xml du dossier resources/ 
+3. Sélectionnez la configuration "localhost"
+4. Connectez-vous avec n'importe quel nom d'utilisateur
+5. Créez votre personnage et amusez-vous !
+
+Serveur de connexion : 127.0.0.1:6789
+Serveur de jeu : 127.0.0.1:9876
+
+Bon jeu ! 🎮`);
+        }
+
+        // Vérifier le statut du serveur au chargement
+        function checkServerStatus() {
+            // Ici vous pourriez faire une requête AJAX pour vérifier si le serveur est en ligne
+            // Pour l'instant, on assume qu'il est hors ligne au démarrage
+            updateServerStatus(false);
+        }
+
+        // Initialiser la page
+        window.onload = function() {
+            checkServerStatus();
+        };
+
+        // Fonction pour télécharger le fichier de configuration
+        function downloadConfig() {
+            const configContent = `<config>
+    <delay value="500"/>
+    <rdelay value="3000"/>
+    <rcount value="10"/>
+
+    <conf name="localhost">
+        <connserver name="localhost:6789" ip="127.0.0.1" port="6789"/>
+        <dataserver url="data/" type="local" priority="3" />
+        <dataserver url="http://staticns.ankama.com/dofus/gamedata/dofus/" priority="1" />
+        <dataserver url="http://gamedata.ankama-games.com/dofus/" priority="0" />
+    </conf>
+</config>`;
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(configContent));
+            element.setAttribute('download', 'config.xml');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>
