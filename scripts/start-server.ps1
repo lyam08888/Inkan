@@ -1,7 +1,4 @@
 # Script de démarrage du serveur Shivas
-param(
-    [string]$ProjectPath = "c:\Users\Montoya\Inkan"
-)
 
 Write-Host "=== Démarrage du serveur Dofus Shivas ===" -ForegroundColor Green
 
@@ -19,8 +16,6 @@ function Write-Log {
 }
 
 try {
-    Set-Location $ProjectPath
-    
     Write-Log "Vérification des prérequis..." "INFO"
     
     # Vérifier que Java est disponible
