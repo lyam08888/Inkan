@@ -99,98 +99,30 @@
         <h1>🎮 Dofus 1.29.1</h1>
         
         <div id="status" class="status">
-            Prêt à démarrer
+            Sélectionnez une action
         </div>
 
         <div class="button-container">
-            <button onclick="startServer()" class="btn" id="serverBtn">
+            <a href="LANCER-SERVEUR-DOFUS.bat" class="btn">
                 🚀 DÉMARRER LE SERVEUR
-            </button>
+            </a>
             
-            <button onclick="startGame()" class="btn play" id="playBtn">
+            <a href="JOUER.bat" class="btn play">
                 ⚔️ LANCER LE JEU
-            </button>
+            </a>
         </div>
 
-        <div id="console"></div>
+        <div id="console">
+            1. Cliquez sur "DÉMARRER LE SERVEUR"
+            2. Choisissez "Exécuter" quand Windows vous le demande
+            3. Attendez que le serveur démarre
+            4. Cliquez sur "LANCER LE JEU"
+            5. Choisissez "Exécuter" à nouveau
+        </div>
     </div>
 
     <script>
-        const consoleElement = document.getElementById('console');
-        const statusElement = document.getElementById('status');
-        let serverRunning = false;
-
-        function runBatchFile(batFile) {
-            // Créer un iframe caché pour éviter la navigation de la page
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-            
-            // Construire l'URL absolue vers le fichier .bat
-            const currentPath = decodeURIComponent(window.location.pathname);
-            const directoryPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-            const batPath = 'file://' + directoryPath + '/' + batFile;
-            
-            // Charger le fichier .bat dans l'iframe
-            iframe.src = batPath;
-            
-            // Nettoyer l'iframe après un court délai
-            setTimeout(() => {
-                document.body.removeChild(iframe);
-            }, 1000);
-        }
-
-        function log(message) {
-            const time = new Date().toLocaleTimeString();
-            consoleElement.innerHTML += `[${time}] ${message}\n`;
-            consoleElement.scrollTop = consoleElement.scrollHeight;
-        }
-
-        function updateStatus(message, isRunning = false) {
-            statusElement.textContent = message;
-            statusElement.className = 'status' + (isRunning ? ' running' : '');
-            serverRunning = isRunning;
-        }
-
-        async function startServer() {
-            try {
-                updateStatus('⏳ Démarrage du serveur...', false);
-                log('Lancement du serveur Dofus...');
-
-                window.open('launch-server.html', '_blank', 'width=1,height=1');
-
-                // Simuler le démarrage réussi après un court délai
-                setTimeout(() => {
-                    log('✅ Serveur démarré avec succès!');
-                    updateStatus('✅ Serveur en ligne', true);
-                }, 2000);
-
-            } catch (error) {
-                log('❌ Erreur: ' + error.message);
-                updateStatus('❌ Erreur lors du démarrage', false);
-            }
-        }
-
-        async function startGame() {
-            if (!serverRunning) {
-                alert('⚠️ Veuillez d\'abord démarrer le serveur!');
-                return;
-            }
-
-            try {
-                log('Lancement du jeu...');
-                
-                window.open('launch-game.html', '_blank', 'width=1,height=1');
-                
-                log('✅ Jeu lancé avec succès!');
-
-            } catch (error) {
-                log('❌ Erreur: ' + error.message);
-            }
-        }
-
-        // Message initial
-        log('👋 Bienvenue! Cliquez sur "DÉMARRER LE SERVEUR" pour commencer.');
+        // Pas de JavaScript nécessaire - liens directs vers les fichiers .bat
     </script>
 </body>
 </html>
