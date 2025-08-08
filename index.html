@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serveur Dofus Shivas - Mode Hors Ligne</title>
+    <title>Dofus Launcher - GitHub Edition</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,25 +64,20 @@
         }
     </style>
     <script>
-        function execBat(batFile) {
-            var link = document.createElement('a');
-            link.href = batFile;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
         function startServer() {
-            document.getElementById('serverStatus').textContent = 'Démarrage en cours...';
-            execBat('LANCER-SERVEUR-DOFUS.bat');
-            setTimeout(function() {
-                document.getElementById('serverStatus').textContent = 'Serveur démarré avec succès!';
-                document.getElementById('startGame').disabled = false;
-            }, 5000);
+            window.location.href = 'LANCER-SERVEUR-DOFUS.bat';
+            setTimeout(() => {
+                document.getElementById('serverStatus').textContent = 'Serveur démarré!';
+                document.getElementById('playBtn').classList.add('ready');
+            }, 2000);
         }
 
-        function launchGame() {
-            execBat('JOUER.bat');
+        function startGame() {
+            if (!document.getElementById('playBtn').classList.contains('ready')) {
+                alert('Veuillez d\'abord démarrer le serveur!');
+                return;
+            }
+            window.location.href = 'JOUER.bat';
         }
     </script>
     <script>
@@ -323,19 +318,15 @@
             font-weight: bold;
         }
 
-        .status.offline {
-            background: rgba(255, 107, 107, 0.2);
-            border: 1px solid #ff6b6b;
+        .play-button.ready {
+            background: #4CAF50;
+            animation: pulse 2s infinite;
         }
 
-        .status.online {
-            background: rgba(78, 205, 196, 0.2);
-            border: 1px solid #4ecdc4;
-        }
-
-        .status.starting {
-            background: rgba(255, 193, 7, 0.2);
-            border: 1px solid #ffc107;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .console {
@@ -496,10 +487,10 @@
 <body>
     <div class="container">
         <div class="logo">⚔️</div>
-        <h1>Serveur Dofus Shivas</h1>
+        <h1>Dofus Launcher</h1>
         <p class="description">
-            Jouez à Dofus en mode hors ligne avec votre serveur privé local !
-            <br>Installation et configuration automatiques.
+            Lancer Dofus directement depuis GitHub
+            <br>Serveur local intégré
         </p>
 
         <div class="status offline" id="serverStatus">
@@ -511,23 +502,11 @@
         </div>
 
         <div class="button-container">
-            <button class="setup-button" onclick="setupEnvironment()" id="setupBtn">
-                ⚙️ Configuration automatique
+            <button class="server-button" onclick="startServer()" id="startBtn">
+                🚀 LANCER LE SERVEUR
             </button>
-            <button class="server-button" onclick="startServer()" id="startBtn" disabled>
-                🚀 Démarrer le serveur
-            </button>
-            <button class="server-button" onclick="stopServer()" id="stopBtn" style="display: none;">
-                🛑 Arrêter le serveur
-            </button>
-        </div>
-
-        <div class="button-container">
-            <button class="play-button pulse" onclick="playGame()" id="playBtn" disabled>
-                🎮 JOUER SANS CONNEXION
-            </button>
-            <button class="setup-button" onclick="downloadConfig()" id="configBtn">
-                📥 Télécharger config.xml
+            <button class="play-button" onclick="startGame()" id="playBtn">
+                🎮 JOUER
             </button>
         </div>
 
