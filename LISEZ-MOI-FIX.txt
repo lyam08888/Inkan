@@ -1,0 +1,12 @@
+Bonjour !
+
+J'ai remarqué que le script de démarrage original (`🎮 JOUER A DOFUS HORS LIGNE.bat`) pouvait avoir des problèmes pour télécharger les dépendances nécessaires.
+
+Pour corriger cela, j'ai créé un nouveau script de démarrage : `JOUER.bat`
+
+Dorénavant, veuillez double-cliquer sur `JOUER.bat` pour lancer le serveur.
+
+Le fonctionnement reste exactement le même.
+
+Bon jeu !
+- Jules, votre ingénieur logiciel.
