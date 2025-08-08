@@ -1,0 +1,3 @@
+@echo off
+echo Lancement de Dofus...
+call "JOUER.bat"
