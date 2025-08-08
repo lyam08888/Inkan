@@ -137,28 +137,8 @@
                 updateStatus('⏳ Démarrage du serveur...', false);
                 log('Lancement du serveur Dofus...');
 
-                // Créer un script PowerShell temporaire
-                const script = `
-                    Write-Host "=== Démarrage du serveur Dofus ===" -ForegroundColor Green
-                    $scriptPath = "LANCER-SERVEUR-DOFUS.bat"
-                    if (Test-Path $scriptPath) {
-                        Start-Process -FilePath $scriptPath
-                        Write-Host "Serveur démarré avec succès!" -ForegroundColor Green
-                    } else {
-                        Write-Host "Erreur: $scriptPath non trouvé" -ForegroundColor Red
-                    }
-                `;
-
-                // Créer un fichier .ps1 temporaire
-                const blob = new Blob([script], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'start-server.ps1';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                const process = new ActiveXObject('WScript.Shell');
+                process.Run('LANCER-SERVEUR-DOFUS.bat', 1, false);
 
                 // Simuler le démarrage réussi
                 setTimeout(() => {
@@ -181,28 +161,8 @@
             try {
                 log('Lancement du jeu...');
                 
-                // Créer un script PowerShell temporaire
-                const script = `
-                    Write-Host "=== Lancement de Dofus ===" -ForegroundColor Green
-                    $scriptPath = "JOUER.bat"
-                    if (Test-Path $scriptPath) {
-                        Start-Process -FilePath $scriptPath
-                        Write-Host "Jeu lancé avec succès!" -ForegroundColor Green
-                    } else {
-                        Write-Host "Erreur: $scriptPath non trouvé" -ForegroundColor Red
-                    }
-                `;
-
-                // Créer un fichier .ps1 temporaire
-                const blob = new Blob([script], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'start-game.ps1';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                const process = new ActiveXObject('WScript.Shell');
+                process.Run('JOUER.bat', 1, false);
 
                 log('✅ Jeu lancé!');
 
