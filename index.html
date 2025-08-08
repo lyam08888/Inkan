@@ -120,25 +120,22 @@
         const statusElement = document.getElementById('status');
         let serverRunning = false;
 
-        function createAndRunPowershellScript(batFile) {
-            const script = `
-                $batPath = "${batFile}"
-                if (Test-Path $batPath) {
-                    Start-Process -FilePath $batPath
-                } else {
-                    Write-Error "Fichier $batPath non trouvé"
-                }
-            `;
-            
-            const blob = new Blob([script], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'run.ps1';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+        function runBatchFile(batFile) {
+            // Créer un objet ActiveX pour Windows Script Host
+            try {
+                const shell = new ActiveXObject("WScript.Shell");
+                // Obtenir le chemin complet du répertoire actuel
+                const currentPath = window.location.pathname;
+                const directoryPath = currentPath.substring(0, currentPath.lastIndexOf('\\'));
+                // Exécuter le fichier .bat
+                shell.Run('"' + directoryPath + '\\' + batFile + '"', 1, false);
+                return true;
+            } catch (e) {
+                console.error(e);
+                // Si ActiveX ne fonctionne pas, essayer avec une URL directe
+                window.location.href = batFile;
+                return false;
+            }
         }
 
         function log(message) {
@@ -158,7 +155,7 @@
                 updateStatus('⏳ Démarrage du serveur...', false);
                 log('Lancement du serveur Dofus...');
 
-                createAndRunPowershellScript('LANCER-SERVEUR-DOFUS.bat');
+                runBatchFile('LANCER-SERVEUR-DOFUS.bat');
 
                 // Simuler le démarrage réussi après un court délai
                 setTimeout(() => {
@@ -181,7 +178,7 @@
             try {
                 log('Lancement du jeu...');
                 
-                createAndRunPowershellScript('JOUER.bat');
+                runBatchFile('JOUER.bat');
                 
                 log('✅ Jeu lancé avec succès!');
 
